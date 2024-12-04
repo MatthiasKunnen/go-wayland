@@ -216,6 +216,13 @@ func writeInterface(w io.Writer, v Interface) {
 	ifaceName := toCamel(v.Name)
 	ifaceNameLower := toLowerCamel(v.Name)
 
+	// Interface name
+	fmt.Fprintf(w, `// %sInterfaceName is the name of the interface as it appears in the [client.Registry].
+`, ifaceName)
+	fmt.Fprintf(w, "// It can be used to match the [client.RegistryGlobalEvent.Interface] in the\n")
+	fmt.Fprintf(w, "// [Registry.SetGlobalHandler] and can be used in [Registry.Bind] if this applies.\n")
+	fmt.Fprintf(w, "const %sInterfaceName = \"%s\"\n", ifaceName, v.Name)
+
 	// Interface struct
 	fmt.Fprintf(w, "// %s : %s\n", ifaceName, doc.Synopsis(v.Description.Summary))
 	fmt.Fprint(w, comment(v.Description.Text))

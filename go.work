@@ -6,5 +6,6 @@ use (
 	./cmd/go-wayland-scanner
 	./examples/idlenotifier
 	./examples/imageviewer
+	./examples/securitycontext
 	./wayland
 )

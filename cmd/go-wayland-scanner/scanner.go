@@ -467,7 +467,7 @@ func writeRequest(w io.Writer, ifaceName string, opcode int, r Request) {
 	}
 	fmt.Fprintf(w, "l += 4\n")
 
-	fdIndex := -1
+	var fdIndices []int
 	for i, arg := range r.Args {
 		argNameLower := toLowerCamel(arg.Name)
 
@@ -562,15 +562,24 @@ func writeRequest(w io.Writer, ifaceName string, opcode int, r Request) {
 			fmt.Fprintf(w, "l += %sLen\n", argNameLower)
 
 		case "fd":
-			fdIndex = i
+			fdIndices = append(fdIndices, i)
 		}
 	}
 
-	if fdIndex != -1 {
-		arg := r.Args[fdIndex]
-		argNameLower := toLowerCamel(arg.Name)
+	if len(fdIndices) > 0 {
+		io.WriteString(w, "oob := unix.UnixRights(")
 
-		fmt.Fprintf(w, "oob := unix.UnixRights(int(%s))\n", argNameLower)
+		for i, fdIndex := range fdIndices {
+			arg := r.Args[fdIndex]
+			argNameLower := toLowerCamel(arg.Name)
+			fmt.Fprintf(w, "int(%s)", argNameLower)
+
+			if i != len(fdIndices)-1 {
+				io.WriteString(w, ", ")
+			}
+		}
+
+		io.WriteString(w, ")\n")
 
 		if canBeConst {
 			fmt.Fprintf(w, "err := i.Context().WriteMsg(_reqBuf[:], oob)\n")

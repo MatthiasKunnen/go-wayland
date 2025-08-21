@@ -23,3 +23,7 @@ CGO_ENABLED=0 go install github.com/MatthiasKunnen/go-wayland/examples/imageview
 
 imageviewer file.jpg
 ```
+
+## Fork
+This repository is forked from [github.com/rajveermalviya/go-wayland](https://github.com/rajveermalviya/go-wayland) and includes several fixes and improvements.
+Forked at `0ad78d1`, see [the diff](https://github.com/MatthiasKunnen/go-wayland/compare/0ad78d1...main).

@@ -28,9 +28,14 @@ func PutFixed(dst []byte, f float64) {
 	*(*int32)(unsafe.Pointer(&dst[0])) = fx
 }
 
-func PutString(dst []byte, v string, l int) {
-	PutUint32(dst[:4], uint32(l))
-	copy(dst[4:], []byte(v))
+// PutString places a string in Wayland's wire format on the destination buffer.
+// It first places the length of the string (plus one for the null terminator) and then the string
+// followed by a null byte.
+// The length of dst must be equal to, or greater than, len(v) + 5.
+func PutString(dst []byte, v string) {
+	PutUint32(dst[:4], uint32(len(v)+1))
+	copy(dst[4:], v)
+	dst[4+len(v)] = '\x00' // To cause panic if dst is not large enough
 }
 
 func PutArray(dst []byte, a []byte) {

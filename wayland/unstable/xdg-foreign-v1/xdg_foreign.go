@@ -155,9 +155,8 @@ func (i *Importer) Destroy() error {
 func (i *Importer) Import(handle string) (*Imported, error) {
 	id := NewImported(i.Context())
 	const opcode = 1
-	handleLen := len(handle) + 1
-	handleLenWithPadding := client.PaddedLen(handleLen)
-	_reqBufLen := 8 + 4 + (4 + handleLenWithPadding)
+	handleLen := client.PaddedLen(len(handle) + 1)
+	_reqBufLen := 8 + 4 + (4 + handleLen)
 	_reqBuf := make([]byte, _reqBufLen)
 	l := 0
 	client.PutUint32(_reqBuf[l:4], i.ID())
@@ -166,8 +165,8 @@ func (i *Importer) Import(handle string) (*Imported, error) {
 	l += 4
 	client.PutUint32(_reqBuf[l:l+4], id.ID())
 	l += 4
-	client.PutString(_reqBuf[l:l+(4+handleLen)], handle, handleLen)
-	l += (4 + handleLenWithPadding)
+	client.PutString(_reqBuf[l:l+(4+handleLen)], handle)
+	l += (4 + handleLen)
 	err := i.Context().WriteMsg(_reqBuf, nil)
 	return id, err
 }

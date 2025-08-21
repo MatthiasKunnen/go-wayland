@@ -288,17 +288,16 @@ func NewPrimarySelectionOffer(ctx *client.Context) *PrimarySelectionOffer {
 // closes its end, at which point the transfer is complete.
 func (i *PrimarySelectionOffer) Receive(mimeType string, fd int) error {
 	const opcode = 0
-	mimeTypeLen := len(mimeType) + 1
-	mimeTypeLenWithPadding := client.PaddedLen(mimeTypeLen)
-	_reqBufLen := 8 + (4 + mimeTypeLenWithPadding)
+	mimeTypeLen := client.PaddedLen(len(mimeType) + 1)
+	_reqBufLen := 8 + (4 + mimeTypeLen)
 	_reqBuf := make([]byte, _reqBufLen)
 	l := 0
 	client.PutUint32(_reqBuf[l:4], i.ID())
 	l += 4
 	client.PutUint32(_reqBuf[l:l+4], uint32(_reqBufLen<<16|opcode&0x0000ffff))
 	l += 4
-	client.PutString(_reqBuf[l:l+(4+mimeTypeLen)], mimeType, mimeTypeLen)
-	l += (4 + mimeTypeLenWithPadding)
+	client.PutString(_reqBuf[l:l+(4+mimeTypeLen)], mimeType)
+	l += (4 + mimeTypeLen)
 	oob := unix.UnixRights(int(fd))
 	err := i.Context().WriteMsg(_reqBuf, oob)
 	return err
@@ -387,17 +386,16 @@ func NewPrimarySelectionSource(ctx *client.Context) *PrimarySelectionSource {
 // targets. Can be called several times to offer multiple types.
 func (i *PrimarySelectionSource) Offer(mimeType string) error {
 	const opcode = 0
-	mimeTypeLen := len(mimeType) + 1
-	mimeTypeLenWithPadding := client.PaddedLen(mimeTypeLen)
-	_reqBufLen := 8 + (4 + mimeTypeLenWithPadding)
+	mimeTypeLen := client.PaddedLen(len(mimeType) + 1)
+	_reqBufLen := 8 + (4 + mimeTypeLen)
 	_reqBuf := make([]byte, _reqBufLen)
 	l := 0
 	client.PutUint32(_reqBuf[l:4], i.ID())
 	l += 4
 	client.PutUint32(_reqBuf[l:l+4], uint32(_reqBufLen<<16|opcode&0x0000ffff))
 	l += 4
-	client.PutString(_reqBuf[l:l+(4+mimeTypeLen)], mimeType, mimeTypeLen)
-	l += (4 + mimeTypeLenWithPadding)
+	client.PutString(_reqBuf[l:l+(4+mimeTypeLen)], mimeType)
+	l += (4 + mimeTypeLen)
 	err := i.Context().WriteMsg(_reqBuf, nil)
 	return err
 }

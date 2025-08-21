@@ -224,17 +224,16 @@ func (i *TextInput) Reset() error {
 // text anchor, then it is the same as cursor.
 func (i *TextInput) SetSurroundingText(text string, cursor, anchor uint32) error {
 	const opcode = 5
-	textLen := len(text) + 1
-	textLenWithPadding := client.PaddedLen(textLen)
-	_reqBufLen := 8 + (4 + textLenWithPadding) + 4 + 4
+	textLen := client.PaddedLen(len(text) + 1)
+	_reqBufLen := 8 + (4 + textLen) + 4 + 4
 	_reqBuf := make([]byte, _reqBufLen)
 	l := 0
 	client.PutUint32(_reqBuf[l:4], i.ID())
 	l += 4
 	client.PutUint32(_reqBuf[l:l+4], uint32(_reqBufLen<<16|opcode&0x0000ffff))
 	l += 4
-	client.PutString(_reqBuf[l:l+(4+textLen)], text, textLen)
-	l += (4 + textLenWithPadding)
+	client.PutString(_reqBuf[l:l+(4+textLen)], text)
+	l += (4 + textLen)
 	client.PutUint32(_reqBuf[l:l+4], uint32(cursor))
 	l += 4
 	client.PutUint32(_reqBuf[l:l+4], uint32(anchor))
@@ -302,17 +301,16 @@ func (i *TextInput) SetCursorRectangle(x, y, width, height int32) error {
 // application which tracks languages of contacts.
 func (i *TextInput) SetPreferredLanguage(language string) error {
 	const opcode = 8
-	languageLen := len(language) + 1
-	languageLenWithPadding := client.PaddedLen(languageLen)
-	_reqBufLen := 8 + (4 + languageLenWithPadding)
+	languageLen := client.PaddedLen(len(language) + 1)
+	_reqBufLen := 8 + (4 + languageLen)
 	_reqBuf := make([]byte, _reqBufLen)
 	l := 0
 	client.PutUint32(_reqBuf[l:4], i.ID())
 	l += 4
 	client.PutUint32(_reqBuf[l:l+4], uint32(_reqBufLen<<16|opcode&0x0000ffff))
 	l += 4
-	client.PutString(_reqBuf[l:l+(4+languageLen)], language, languageLen)
-	l += (4 + languageLenWithPadding)
+	client.PutString(_reqBuf[l:l+(4+languageLen)], language)
+	l += (4 + languageLen)
 	err := i.Context().WriteMsg(_reqBuf, nil)
 	return err
 }

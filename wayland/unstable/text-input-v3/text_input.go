@@ -227,17 +227,16 @@ func (i *TextInput) Disable() error {
 // get applied, subsequent attempts to change them may have no effect.
 func (i *TextInput) SetSurroundingText(text string, cursor, anchor int32) error {
 	const opcode = 3
-	textLen := len(text) + 1
-	textLenWithPadding := client.PaddedLen(textLen)
-	_reqBufLen := 8 + (4 + textLenWithPadding) + 4 + 4
+	textLen := client.PaddedLen(len(text) + 1)
+	_reqBufLen := 8 + (4 + textLen) + 4 + 4
 	_reqBuf := make([]byte, _reqBufLen)
 	l := 0
 	client.PutUint32(_reqBuf[l:4], i.ID())
 	l += 4
 	client.PutUint32(_reqBuf[l:l+4], uint32(_reqBufLen<<16|opcode&0x0000ffff))
 	l += 4
-	client.PutString(_reqBuf[l:l+(4+textLen)], text, textLen)
-	l += (4 + textLenWithPadding)
+	client.PutString(_reqBuf[l:l+(4+textLen)], text)
+	l += (4 + textLen)
 	client.PutUint32(_reqBuf[l:l+4], uint32(cursor))
 	l += 4
 	client.PutUint32(_reqBuf[l:l+4], uint32(anchor))

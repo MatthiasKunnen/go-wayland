@@ -130,9 +130,8 @@ func (i *InputMethodContext) Destroy() error {
 //	serial: serial of the latest known text input state
 func (i *InputMethodContext) CommitString(serial uint32, text string) error {
 	const opcode = 1
-	textLen := len(text) + 1
-	textLenWithPadding := client.PaddedLen(textLen)
-	_reqBufLen := 8 + 4 + (4 + textLenWithPadding)
+	textLen := client.PaddedLen(len(text) + 1)
+	_reqBufLen := 8 + 4 + (4 + textLen)
 	_reqBuf := make([]byte, _reqBufLen)
 	l := 0
 	client.PutUint32(_reqBuf[l:4], i.ID())
@@ -141,8 +140,8 @@ func (i *InputMethodContext) CommitString(serial uint32, text string) error {
 	l += 4
 	client.PutUint32(_reqBuf[l:l+4], uint32(serial))
 	l += 4
-	client.PutString(_reqBuf[l:l+(4+textLen)], text, textLen)
-	l += (4 + textLenWithPadding)
+	client.PutString(_reqBuf[l:l+(4+textLen)], text)
+	l += (4 + textLen)
 	err := i.Context().WriteMsg(_reqBuf, nil)
 	return err
 }
@@ -160,11 +159,9 @@ func (i *InputMethodContext) CommitString(serial uint32, text string) error {
 //	serial: serial of the latest known text input state
 func (i *InputMethodContext) PreeditString(serial uint32, text, commit string) error {
 	const opcode = 2
-	textLen := len(text) + 1
-	textLenWithPadding := client.PaddedLen(textLen)
-	commitLen := len(commit) + 1
-	commitLenWithPadding := client.PaddedLen(commitLen)
-	_reqBufLen := 8 + 4 + (4 + textLenWithPadding) + (4 + commitLenWithPadding)
+	textLen := client.PaddedLen(len(text) + 1)
+	commitLen := client.PaddedLen(len(commit) + 1)
+	_reqBufLen := 8 + 4 + (4 + textLen) + (4 + commitLen)
 	_reqBuf := make([]byte, _reqBufLen)
 	l := 0
 	client.PutUint32(_reqBuf[l:4], i.ID())
@@ -173,10 +170,10 @@ func (i *InputMethodContext) PreeditString(serial uint32, text, commit string) e
 	l += 4
 	client.PutUint32(_reqBuf[l:l+4], uint32(serial))
 	l += 4
-	client.PutString(_reqBuf[l:l+(4+textLen)], text, textLen)
-	l += (4 + textLenWithPadding)
-	client.PutString(_reqBuf[l:l+(4+commitLen)], commit, commitLen)
-	l += (4 + commitLenWithPadding)
+	client.PutString(_reqBuf[l:l+(4+textLen)], text)
+	l += (4 + textLen)
+	client.PutString(_reqBuf[l:l+(4+commitLen)], commit)
+	l += (4 + commitLen)
 	err := i.Context().WriteMsg(_reqBuf, nil)
 	return err
 }
@@ -427,9 +424,8 @@ func (i *InputMethodContext) Modifiers(serial, modsDepressed, modsLatched, modsL
 //	serial: serial of the latest known text input state
 func (i *InputMethodContext) Language(serial uint32, language string) error {
 	const opcode = 12
-	languageLen := len(language) + 1
-	languageLenWithPadding := client.PaddedLen(languageLen)
-	_reqBufLen := 8 + 4 + (4 + languageLenWithPadding)
+	languageLen := client.PaddedLen(len(language) + 1)
+	_reqBufLen := 8 + 4 + (4 + languageLen)
 	_reqBuf := make([]byte, _reqBufLen)
 	l := 0
 	client.PutUint32(_reqBuf[l:4], i.ID())
@@ -438,8 +434,8 @@ func (i *InputMethodContext) Language(serial uint32, language string) error {
 	l += 4
 	client.PutUint32(_reqBuf[l:l+4], uint32(serial))
 	l += 4
-	client.PutString(_reqBuf[l:l+(4+languageLen)], language, languageLen)
-	l += (4 + languageLenWithPadding)
+	client.PutString(_reqBuf[l:l+(4+languageLen)], language)
+	l += (4 + languageLen)
 	err := i.Context().WriteMsg(_reqBuf, nil)
 	return err
 }

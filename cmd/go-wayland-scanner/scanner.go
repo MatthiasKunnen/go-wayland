@@ -35,8 +35,8 @@ func init() {
 	flag.StringVar(&inputFile, "i", "", "Remote url or local path of the protocol xml file")
 	flag.StringVar(&outputFile, "o", "", "Path of the generated output go file")
 	flag.StringVar(&packageName, "pkg", "", "Go package name")
-	flag.StringVar(&prefix, "prefix", "", "Specifiy prefix to trim")
-	flag.StringVar(&suffix, "suffix", "", "Specifiy suffix to trim")
+	flag.StringVar(&prefix, "prefix", "", "Specify prefix to trim")
+	flag.StringVar(&suffix, "suffix", "", "Specify suffix to trim")
 }
 
 type Protocol struct {

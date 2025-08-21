@@ -15,8 +15,8 @@ respectively.
 To demonstrate the functionality of this module
 [`examples/imageviewer`](examples/imageviewer) contains a simple image
 viewer. It demos displaying a top-level window, resizing of window,
-cursor themes, pointer & keyboard. Because it's in pure Go, it can be
-compiled without CGO. You can try it using following commands:
+cursor themes, pointer and keyboard. Because it's in pure Go, it can be
+compiled without CGO. You can try it using the following commands:
 
 ```sh
 CGO_ENABLED=0 go install github.com/MatthiasKunnen/go-wayland/examples/imageviewer@latest

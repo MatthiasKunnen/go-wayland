@@ -114,8 +114,9 @@ func (i *Activation) GetActivationToken() (*ActivationToken, error) {
 //	surface: the wl_surface to activate
 func (i *Activation) Activate(token string, surface *client.Surface) error {
 	const opcode = 2
-	tokenLen := client.PaddedLen(len(token) + 1)
-	_reqBufLen := 8 + (4 + tokenLen) + 4
+	tokenLen := len(token) + 1
+	tokenLenWithPadding := client.PaddedLen(tokenLen)
+	_reqBufLen := 8 + (4 + tokenLenWithPadding) + 4
 	_reqBuf := make([]byte, _reqBufLen)
 	l := 0
 	client.PutUint32(_reqBuf[l:4], i.ID())
@@ -123,7 +124,7 @@ func (i *Activation) Activate(token string, surface *client.Surface) error {
 	client.PutUint32(_reqBuf[l:l+4], uint32(_reqBufLen<<16|opcode&0x0000ffff))
 	l += 4
 	client.PutString(_reqBuf[l:l+(4+tokenLen)], token, tokenLen)
-	l += (4 + tokenLen)
+	l += (4 + tokenLenWithPadding)
 	client.PutUint32(_reqBuf[l:l+4], surface.ID())
 	l += 4
 	err := i.Context().WriteMsg(_reqBuf, nil)
@@ -210,8 +211,9 @@ func (i *ActivationToken) SetSerial(serial uint32, seat *client.Seat) error {
 //	appId: the application id of the client being activated.
 func (i *ActivationToken) SetAppId(appId string) error {
 	const opcode = 1
-	appIdLen := client.PaddedLen(len(appId) + 1)
-	_reqBufLen := 8 + (4 + appIdLen)
+	appIdLen := len(appId) + 1
+	appIdLenWithPadding := client.PaddedLen(appIdLen)
+	_reqBufLen := 8 + (4 + appIdLenWithPadding)
 	_reqBuf := make([]byte, _reqBufLen)
 	l := 0
 	client.PutUint32(_reqBuf[l:4], i.ID())
@@ -219,7 +221,7 @@ func (i *ActivationToken) SetAppId(appId string) error {
 	client.PutUint32(_reqBuf[l:l+4], uint32(_reqBufLen<<16|opcode&0x0000ffff))
 	l += 4
 	client.PutString(_reqBuf[l:l+(4+appIdLen)], appId, appIdLen)
-	l += (4 + appIdLen)
+	l += (4 + appIdLenWithPadding)
 	err := i.Context().WriteMsg(_reqBuf, nil)
 	return err
 }

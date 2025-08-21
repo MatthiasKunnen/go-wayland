@@ -1127,8 +1127,9 @@ func (i *Toplevel) SetParent(parent *Toplevel) error {
 // The string must be encoded in UTF-8.
 func (i *Toplevel) SetTitle(title string) error {
 	const opcode = 2
-	titleLen := client.PaddedLen(len(title) + 1)
-	_reqBufLen := 8 + (4 + titleLen)
+	titleLen := len(title) + 1
+	titleLenWithPadding := client.PaddedLen(titleLen)
+	_reqBufLen := 8 + (4 + titleLenWithPadding)
 	_reqBuf := make([]byte, _reqBufLen)
 	l := 0
 	client.PutUint32(_reqBuf[l:4], i.ID())
@@ -1136,7 +1137,7 @@ func (i *Toplevel) SetTitle(title string) error {
 	client.PutUint32(_reqBuf[l:l+4], uint32(_reqBufLen<<16|opcode&0x0000ffff))
 	l += 4
 	client.PutString(_reqBuf[l:l+(4+titleLen)], title, titleLen)
-	l += (4 + titleLen)
+	l += (4 + titleLenWithPadding)
 	err := i.Context().WriteMsg(_reqBuf, nil)
 	return err
 }
@@ -1165,8 +1166,9 @@ func (i *Toplevel) SetTitle(title string) error {
 // [0] http://standards.freedesktop.org/desktop-entry-spec/
 func (i *Toplevel) SetAppId(appId string) error {
 	const opcode = 3
-	appIdLen := client.PaddedLen(len(appId) + 1)
-	_reqBufLen := 8 + (4 + appIdLen)
+	appIdLen := len(appId) + 1
+	appIdLenWithPadding := client.PaddedLen(appIdLen)
+	_reqBufLen := 8 + (4 + appIdLenWithPadding)
 	_reqBuf := make([]byte, _reqBufLen)
 	l := 0
 	client.PutUint32(_reqBuf[l:4], i.ID())
@@ -1174,7 +1176,7 @@ func (i *Toplevel) SetAppId(appId string) error {
 	client.PutUint32(_reqBuf[l:l+4], uint32(_reqBufLen<<16|opcode&0x0000ffff))
 	l += 4
 	client.PutString(_reqBuf[l:l+(4+appIdLen)], appId, appIdLen)
-	l += (4 + appIdLen)
+	l += (4 + appIdLenWithPadding)
 	err := i.Context().WriteMsg(_reqBuf, nil)
 	return err
 }

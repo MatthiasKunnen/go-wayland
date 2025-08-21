@@ -308,8 +308,9 @@ func NewRegistry(ctx *Context) *Registry {
 //	name: unique numeric name of the object
 func (i *Registry) Bind(name uint32, iface string, version uint32, id Proxy) error {
 	const opcode = 0
-	ifaceLen := PaddedLen(len(iface) + 1)
-	_reqBufLen := 8 + 4 + (4 + ifaceLen) + 4 + 4
+	ifaceLen := len(iface) + 1
+	ifaceLenWithPadding := PaddedLen(ifaceLen)
+	_reqBufLen := 8 + 4 + (4 + ifaceLenWithPadding) + 4 + 4
 	_reqBuf := make([]byte, _reqBufLen)
 	l := 0
 	PutUint32(_reqBuf[l:4], i.ID())
@@ -319,7 +320,7 @@ func (i *Registry) Bind(name uint32, iface string, version uint32, id Proxy) err
 	PutUint32(_reqBuf[l:l+4], uint32(name))
 	l += 4
 	PutString(_reqBuf[l:l+(4+ifaceLen)], iface, ifaceLen)
-	l += (4 + ifaceLen)
+	l += (4 + ifaceLenWithPadding)
 	PutUint32(_reqBuf[l:l+4], uint32(version))
 	l += 4
 	PutUint32(_reqBuf[l:l+4], id.ID())
@@ -1626,8 +1627,9 @@ func NewDataOffer(ctx *Context) *DataOffer {
 //	mimeType: mime type accepted by the client
 func (i *DataOffer) Accept(serial uint32, mimeType string) error {
 	const opcode = 0
-	mimeTypeLen := PaddedLen(len(mimeType) + 1)
-	_reqBufLen := 8 + 4 + (4 + mimeTypeLen)
+	mimeTypeLen := len(mimeType) + 1
+	mimeTypeLenWithPadding := PaddedLen(mimeTypeLen)
+	_reqBufLen := 8 + 4 + (4 + mimeTypeLenWithPadding)
 	_reqBuf := make([]byte, _reqBufLen)
 	l := 0
 	PutUint32(_reqBuf[l:4], i.ID())
@@ -1637,7 +1639,7 @@ func (i *DataOffer) Accept(serial uint32, mimeType string) error {
 	PutUint32(_reqBuf[l:l+4], uint32(serial))
 	l += 4
 	PutString(_reqBuf[l:l+(4+mimeTypeLen)], mimeType, mimeTypeLen)
-	l += (4 + mimeTypeLen)
+	l += (4 + mimeTypeLenWithPadding)
 	err := i.Context().WriteMsg(_reqBuf, nil)
 	return err
 }
@@ -1664,8 +1666,9 @@ func (i *DataOffer) Accept(serial uint32, mimeType string) error {
 //	fd: file descriptor for data transfer
 func (i *DataOffer) Receive(mimeType string, fd int) error {
 	const opcode = 1
-	mimeTypeLen := PaddedLen(len(mimeType) + 1)
-	_reqBufLen := 8 + (4 + mimeTypeLen)
+	mimeTypeLen := len(mimeType) + 1
+	mimeTypeLenWithPadding := PaddedLen(mimeTypeLen)
+	_reqBufLen := 8 + (4 + mimeTypeLenWithPadding)
 	_reqBuf := make([]byte, _reqBufLen)
 	l := 0
 	PutUint32(_reqBuf[l:4], i.ID())
@@ -1673,7 +1676,7 @@ func (i *DataOffer) Receive(mimeType string, fd int) error {
 	PutUint32(_reqBuf[l:l+4], uint32(_reqBufLen<<16|opcode&0x0000ffff))
 	l += 4
 	PutString(_reqBuf[l:l+(4+mimeTypeLen)], mimeType, mimeTypeLen)
-	l += (4 + mimeTypeLen)
+	l += (4 + mimeTypeLenWithPadding)
 	oob := unix.UnixRights(int(fd))
 	err := i.Context().WriteMsg(_reqBuf, oob)
 	return err
@@ -1981,8 +1984,9 @@ func NewDataSource(ctx *Context) *DataSource {
 //	mimeType: mime type offered by the data source
 func (i *DataSource) Offer(mimeType string) error {
 	const opcode = 0
-	mimeTypeLen := PaddedLen(len(mimeType) + 1)
-	_reqBufLen := 8 + (4 + mimeTypeLen)
+	mimeTypeLen := len(mimeType) + 1
+	mimeTypeLenWithPadding := PaddedLen(mimeTypeLen)
+	_reqBufLen := 8 + (4 + mimeTypeLenWithPadding)
 	_reqBuf := make([]byte, _reqBufLen)
 	l := 0
 	PutUint32(_reqBuf[l:4], i.ID())
@@ -1990,7 +1994,7 @@ func (i *DataSource) Offer(mimeType string) error {
 	PutUint32(_reqBuf[l:l+4], uint32(_reqBufLen<<16|opcode&0x0000ffff))
 	l += 4
 	PutString(_reqBuf[l:l+(4+mimeTypeLen)], mimeType, mimeTypeLen)
-	l += (4 + mimeTypeLen)
+	l += (4 + mimeTypeLenWithPadding)
 	err := i.Context().WriteMsg(_reqBuf, nil)
 	return err
 }
@@ -3248,8 +3252,9 @@ func (i *ShellSurface) SetMaximized(output *Output) error {
 //	title: surface title
 func (i *ShellSurface) SetTitle(title string) error {
 	const opcode = 8
-	titleLen := PaddedLen(len(title) + 1)
-	_reqBufLen := 8 + (4 + titleLen)
+	titleLen := len(title) + 1
+	titleLenWithPadding := PaddedLen(titleLen)
+	_reqBufLen := 8 + (4 + titleLenWithPadding)
 	_reqBuf := make([]byte, _reqBufLen)
 	l := 0
 	PutUint32(_reqBuf[l:4], i.ID())
@@ -3257,7 +3262,7 @@ func (i *ShellSurface) SetTitle(title string) error {
 	PutUint32(_reqBuf[l:l+4], uint32(_reqBufLen<<16|opcode&0x0000ffff))
 	l += 4
 	PutString(_reqBuf[l:l+(4+titleLen)], title, titleLen)
-	l += (4 + titleLen)
+	l += (4 + titleLenWithPadding)
 	err := i.Context().WriteMsg(_reqBuf, nil)
 	return err
 }
@@ -3274,8 +3279,9 @@ func (i *ShellSurface) SetTitle(title string) error {
 //	class: surface class
 func (i *ShellSurface) SetClass(class string) error {
 	const opcode = 9
-	classLen := PaddedLen(len(class) + 1)
-	_reqBufLen := 8 + (4 + classLen)
+	classLen := len(class) + 1
+	classLenWithPadding := PaddedLen(classLen)
+	_reqBufLen := 8 + (4 + classLenWithPadding)
 	_reqBuf := make([]byte, _reqBufLen)
 	l := 0
 	PutUint32(_reqBuf[l:4], i.ID())
@@ -3283,7 +3289,7 @@ func (i *ShellSurface) SetClass(class string) error {
 	PutUint32(_reqBuf[l:l+4], uint32(_reqBufLen<<16|opcode&0x0000ffff))
 	l += 4
 	PutString(_reqBuf[l:l+(4+classLen)], class, classLen)
-	l += (4 + classLen)
+	l += (4 + classLenWithPadding)
 	err := i.Context().WriteMsg(_reqBuf, nil)
 	return err
 }

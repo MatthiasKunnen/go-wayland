@@ -1439,8 +1439,9 @@ func NewTabletPadRing(ctx *client.Context) *TabletPadRing {
 //	serial: serial of the mode switch event
 func (i *TabletPadRing) SetFeedback(description string, serial uint32) error {
 	const opcode = 0
-	descriptionLen := client.PaddedLen(len(description) + 1)
-	_reqBufLen := 8 + (4 + descriptionLen) + 4
+	descriptionLen := len(description) + 1
+	descriptionLenWithPadding := client.PaddedLen(descriptionLen)
+	_reqBufLen := 8 + (4 + descriptionLenWithPadding) + 4
 	_reqBuf := make([]byte, _reqBufLen)
 	l := 0
 	client.PutUint32(_reqBuf[l:4], i.ID())
@@ -1448,7 +1449,7 @@ func (i *TabletPadRing) SetFeedback(description string, serial uint32) error {
 	client.PutUint32(_reqBuf[l:l+4], uint32(_reqBufLen<<16|opcode&0x0000ffff))
 	l += 4
 	client.PutString(_reqBuf[l:l+(4+descriptionLen)], description, descriptionLen)
-	l += (4 + descriptionLen)
+	l += (4 + descriptionLenWithPadding)
 	client.PutUint32(_reqBuf[l:l+4], uint32(serial))
 	l += 4
 	err := i.Context().WriteMsg(_reqBuf, nil)
@@ -1693,8 +1694,9 @@ func NewTabletPadStrip(ctx *client.Context) *TabletPadStrip {
 //	serial: serial of the mode switch event
 func (i *TabletPadStrip) SetFeedback(description string, serial uint32) error {
 	const opcode = 0
-	descriptionLen := client.PaddedLen(len(description) + 1)
-	_reqBufLen := 8 + (4 + descriptionLen) + 4
+	descriptionLen := len(description) + 1
+	descriptionLenWithPadding := client.PaddedLen(descriptionLen)
+	_reqBufLen := 8 + (4 + descriptionLenWithPadding) + 4
 	_reqBuf := make([]byte, _reqBufLen)
 	l := 0
 	client.PutUint32(_reqBuf[l:4], i.ID())
@@ -1702,7 +1704,7 @@ func (i *TabletPadStrip) SetFeedback(description string, serial uint32) error {
 	client.PutUint32(_reqBuf[l:l+4], uint32(_reqBufLen<<16|opcode&0x0000ffff))
 	l += 4
 	client.PutString(_reqBuf[l:l+(4+descriptionLen)], description, descriptionLen)
-	l += (4 + descriptionLen)
+	l += (4 + descriptionLenWithPadding)
 	client.PutUint32(_reqBuf[l:l+4], uint32(serial))
 	l += 4
 	err := i.Context().WriteMsg(_reqBuf, nil)
@@ -2284,8 +2286,9 @@ func NewTabletPad(ctx *client.Context) *TabletPad {
 //	serial: serial of the mode switch event
 func (i *TabletPad) SetFeedback(button uint32, description string, serial uint32) error {
 	const opcode = 0
-	descriptionLen := client.PaddedLen(len(description) + 1)
-	_reqBufLen := 8 + 4 + (4 + descriptionLen) + 4
+	descriptionLen := len(description) + 1
+	descriptionLenWithPadding := client.PaddedLen(descriptionLen)
+	_reqBufLen := 8 + 4 + (4 + descriptionLenWithPadding) + 4
 	_reqBuf := make([]byte, _reqBufLen)
 	l := 0
 	client.PutUint32(_reqBuf[l:4], i.ID())
@@ -2295,7 +2298,7 @@ func (i *TabletPad) SetFeedback(button uint32, description string, serial uint32
 	client.PutUint32(_reqBuf[l:l+4], uint32(button))
 	l += 4
 	client.PutString(_reqBuf[l:l+(4+descriptionLen)], description, descriptionLen)
-	l += (4 + descriptionLen)
+	l += (4 + descriptionLenWithPadding)
 	client.PutUint32(_reqBuf[l:l+4], uint32(serial))
 	l += 4
 	err := i.Context().WriteMsg(_reqBuf, nil)

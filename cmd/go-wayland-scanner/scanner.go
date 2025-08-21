@@ -419,11 +419,13 @@ func writeRequest(w io.Writer, ifaceName string, opcode int, r Request) {
 			} else {
 				canBeConst = false
 				if protocol.Name == "wayland" {
-					fmt.Fprintf(w, "ifaceLen := PaddedLen(len(iface)+1)\n")
+					fmt.Fprintf(w, "ifaceLen := len(iface)+1\n")
+					fmt.Fprintf(w, "ifaceLenWithPadding := PaddedLen(ifaceLen)\n")
 				} else {
-					fmt.Fprintf(w, "ifaceLen := client.PaddedLen(len(iface)+1)\n")
+					fmt.Fprintf(w, "ifaceLen := len(iface)+1\n")
+					fmt.Fprintf(w, "ifaceLenWithPadding := client.PaddedLen(ifaceLen)\n")
 				}
-				sizes = append(sizes, "(4 + ifaceLen)", "4", "4")
+				sizes = append(sizes, "(4 + ifaceLenWithPadding)", "4", "4")
 			}
 
 		case "object", "int", "uint", "fixed":
@@ -432,11 +434,13 @@ func writeRequest(w io.Writer, ifaceName string, opcode int, r Request) {
 		case "string":
 			canBeConst = false
 			if protocol.Name == "wayland" {
-				fmt.Fprintf(w, "%sLen := PaddedLen(len(%s)+1)\n", argNameLower, argNameLower)
+				fmt.Fprintf(w, "%sLen := len(%s) + 1\n", argNameLower, argNameLower)
+				fmt.Fprintf(w, "%sLenWithPadding := PaddedLen(%sLen)\n", argNameLower, argNameLower)
 			} else {
-				fmt.Fprintf(w, "%sLen := client.PaddedLen(len(%s)+1)\n", argNameLower, argNameLower)
+				fmt.Fprintf(w, "%sLen := len(%s) + 1\n", argNameLower, argNameLower)
+				fmt.Fprintf(w, "%sLenWithPadding := client.PaddedLen(%sLen)\n", argNameLower, argNameLower)
 			}
-			sizes = append(sizes, fmt.Sprintf("(4 + %sLen)", argNameLower))
+			sizes = append(sizes, fmt.Sprintf("(4 + %sLenWithPadding)", argNameLower))
 
 		case "array":
 			canBeConst = false
@@ -512,7 +516,7 @@ func writeRequest(w io.Writer, ifaceName string, opcode int, r Request) {
 				} else {
 					fmt.Fprintf(w, "client.PutString(_reqBuf[l:l+(4 + ifaceLen)], iface, ifaceLen)\n")
 				}
-				fmt.Fprintf(w, "l += (4 + ifaceLen)\n")
+				fmt.Fprintf(w, "l += (4 + ifaceLenWithPadding)\n")
 
 				if protocol.Name == "wayland" {
 					fmt.Fprintf(w, "PutUint32(_reqBuf[l:l+4], uint32(version))\n")
@@ -551,7 +555,7 @@ func writeRequest(w io.Writer, ifaceName string, opcode int, r Request) {
 			} else {
 				fmt.Fprintf(w, "client.PutString(_reqBuf[l:l+(4 + %sLen)], %s, %sLen)\n", argNameLower, argNameLower, argNameLower)
 			}
-			fmt.Fprintf(w, "l += (4 + %sLen)\n", argNameLower)
+			fmt.Fprintf(w, "l += (4 + %sLenWithPadding)\n", argNameLower)
 
 		case "array":
 			if protocol.Name == "wayland" {

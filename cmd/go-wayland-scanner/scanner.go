@@ -120,8 +120,8 @@ func main() {
 		return
 	}
 
-	useCache := os.Getenv("WAYLAND_SCANNER_USE_CACHE")
-	if useCache == "1" {
+	disableCache := os.Getenv("WAYLAND_SCANNER_DISABLE_CACHE")
+	if disableCache != "1" && disableCache != "true" {
 		xdgCacheHome := os.Getenv("XDG_CACHE_HOME")
 		if xdgCacheHome == "" {
 			xdgCacheHome = filepath.Join(os.Getenv("HOME"), ".cache")

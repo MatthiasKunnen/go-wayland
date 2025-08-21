@@ -417,7 +417,7 @@ func (app *appState) cleanup() {
 	}
 
 	if app.shm != nil {
-		if err := app.shm.Destroy(); err != nil {
+		if err := app.shm.Release(); err != nil {
 			logPrintln("unable to destroy wl_shm:", err)
 		}
 		app.shm = nil
